@@ -1,0 +1,9 @@
+export { LoginPage } from './LoginPage';
+export { ForbiddenPage } from './ForbiddenPage';
+export { DashboardPage } from './DashboardPage';
+export { VillagesPage } from './VillagesPage';
+export { CastlesPage } from './CastlesPage';
+export { PassagesPage } from './PassagesPage';
+export { NodesPage } from './NodesPage';
+export { QuestionsPage } from './QuestionsPage';
+export { TestModePage } from './TestModePage';
