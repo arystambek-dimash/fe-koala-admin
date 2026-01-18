@@ -1,7 +1,7 @@
 import axios, {AxiosError} from 'axios';
 import {getToastHandler} from '@/contexts/ToastContext';
 
-const API_BASE_URL = `${process.env.BACKEND_URL}/api/v1`;
+const API_BASE_URL = '/api/v1';
 
 export const apiClient = axios.create({
     baseURL: API_BASE_URL,
