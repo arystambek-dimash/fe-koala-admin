@@ -239,14 +239,10 @@ export interface HighlightContent {
     explanation: string;
 }
 
-export interface SwipeCard {
+export interface SwipeDecisionContent {
     content: string;
     correct_swipe: 'left' | 'right';
     explanation: string;
-}
-
-export interface SwipeDecisionContent {
-    cards: SwipeCard[];
     labels: { left: string; right: string };
 }
 

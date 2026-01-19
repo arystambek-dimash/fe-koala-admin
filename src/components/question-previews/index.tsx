@@ -328,70 +328,64 @@ function HighlightPreview({ content }: { content: HighlightContent }) {
 
 // Swipe Decision Preview
 function SwipeDecisionPreview({ content }: { content: SwipeDecisionContent }) {
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [results, setResults] = useState<boolean[]>([]);
-    const [swipeDirection, setSwipeDirection] = useState<'left' | 'right' | null>(null);
+    const [selected, setSelected] = useState<'left' | 'right' | null>(null);
+    const [submitted, setSubmitted] = useState(false);
 
-    const currentCard = content.cards[currentIndex];
-    const isComplete = currentIndex >= content.cards.length;
-
-    const handleSwipe = (direction: 'left' | 'right') => {
-        if (isComplete) return;
-        setSwipeDirection(direction);
-        const isCorrect = direction === currentCard.correct_swipe;
-
-        setTimeout(() => {
-            setResults([...results, isCorrect]);
-            setCurrentIndex(currentIndex + 1);
-            setSwipeDirection(null);
-        }, 300);
-    };
-
-    const correctCount = results.filter(r => r).length;
+    const isCorrect = selected === content.correct_swipe;
 
     return (
         <div className="space-y-4">
             <div className="flex justify-between text-sm text-gray-500">
                 <span>{content.labels.left}</span>
-                <span>{currentIndex + 1} / {content.cards.length}</span>
                 <span>{content.labels.right}</span>
             </div>
 
-            {!isComplete ? (
-                <>
-                    <div className={cn(
-                        'relative h-48 rounded-xl border-2 border-gray-200 bg-white p-6 transition-all duration-300',
-                        swipeDirection === 'left' && '-translate-x-full rotate-[-10deg] opacity-0',
-                        swipeDirection === 'right' && 'translate-x-full rotate-[10deg] opacity-0'
-                    )}>
-                        <p className="text-center text-lg font-medium">{currentCard.content}</p>
-                    </div>
-                    <div className="flex gap-4">
-                        <button
-                            onClick={() => handleSwipe('left')}
-                            className="flex-1 rounded-xl border-2 border-red-200 bg-red-50 py-4 font-medium text-red-600 hover:bg-red-100"
-                        >
-                            {content.labels.left}
-                        </button>
-                        <button
-                            onClick={() => handleSwipe('right')}
-                            className="flex-1 rounded-xl border-2 border-green-200 bg-green-50 py-4 font-medium text-green-600 hover:bg-green-100"
-                        >
-                            {content.labels.right}
-                        </button>
-                    </div>
-                </>
+            <div className="rounded-xl border-2 border-gray-200 bg-white p-6">
+                <p className="text-center text-lg font-medium">{content.content}</p>
+            </div>
+
+            <div className="flex gap-4">
+                <button
+                    onClick={() => !submitted && setSelected('left')}
+                    className={cn(
+                        'flex-1 rounded-xl border-2 py-4 font-medium transition-all',
+                        !submitted && selected === 'left' && 'border-blue-500 bg-blue-50 text-blue-600',
+                        !submitted && selected !== 'left' && 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100',
+                        submitted && content.correct_swipe === 'left' && 'border-green-500 bg-green-50 text-green-600',
+                        submitted && selected === 'left' && content.correct_swipe !== 'left' && 'border-red-500 bg-red-50 text-red-600'
+                    )}
+                >
+                    ← {content.labels.left}
+                </button>
+                <button
+                    onClick={() => !submitted && setSelected('right')}
+                    className={cn(
+                        'flex-1 rounded-xl border-2 py-4 font-medium transition-all',
+                        !submitted && selected === 'right' && 'border-blue-500 bg-blue-50 text-blue-600',
+                        !submitted && selected !== 'right' && 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100',
+                        submitted && content.correct_swipe === 'right' && 'border-green-500 bg-green-50 text-green-600',
+                        submitted && selected === 'right' && content.correct_swipe !== 'right' && 'border-red-500 bg-red-50 text-red-600'
+                    )}
+                >
+                    {content.labels.right} →
+                </button>
+            </div>
+
+            {!submitted ? (
+                <button
+                    onClick={() => selected && setSubmitted(true)}
+                    disabled={!selected}
+                    className="w-full rounded-xl bg-gray-900 py-3 font-medium text-white disabled:opacity-50"
+                >
+                    Submit Answer
+                </button>
             ) : (
                 <div className={cn(
-                    'rounded-xl p-6 text-center',
-                    correctCount === content.cards.length ? 'bg-green-50' : 'bg-yellow-50'
+                    'rounded-xl p-4',
+                    isCorrect ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
                 )}>
-                    <p className="text-2xl font-bold">
-                        {correctCount} / {content.cards.length}
-                    </p>
-                    <p className="mt-2 text-gray-600">
-                        {correctCount === content.cards.length ? 'Perfect!' : 'Keep practicing!'}
-                    </p>
+                    <p className="font-medium">{isCorrect ? 'Correct!' : 'Incorrect'}</p>
+                    <p className="mt-1 text-sm">{content.explanation}</p>
                 </div>
             )}
         </div>

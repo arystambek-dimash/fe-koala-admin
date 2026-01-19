@@ -645,32 +645,12 @@ export function HighlightForm({ value, onChange }: FormProps<HighlightContent>) 
 
 // Swipe Decision Form (Reading/Science)
 export function SwipeDecisionForm({ value, onChange }: FormProps<SwipeDecisionContent>) {
-    const addCard = () => {
-        onChange({
-            ...value,
-            cards: [...value.cards, { content: '', correct_swipe: 'left', explanation: '' }],
-        });
-    };
-
-    const removeCard = (index: number) => {
-        onChange({
-            ...value,
-            cards: value.cards.filter((_, i) => i !== index),
-        });
-    };
-
-    const updateCard = (index: number, field: string, val: string) => {
-        const newCards = [...value.cards];
-        newCards[index] = { ...newCards[index], [field]: val };
-        onChange({ ...value, cards: newCards });
-    };
-
     return (
         <div className="space-y-6">
             <SectionHeader
                 icon={ArrowUpDown}
                 title="Swipe Decision"
-                description="Create cards that students swipe left or right to categorize (e.g., Fact vs Opinion)."
+                description="Create a card that students swipe left or right to categorize (e.g., Fact vs Opinion)."
             />
 
             {/* Step 1: Set Labels */}
@@ -697,88 +677,73 @@ export function SwipeDecisionForm({ value, onChange }: FormProps<SwipeDecisionCo
                 </div>
             </div>
 
-            {/* Step 2: Add Cards */}
+            {/* Step 2: Statement */}
             <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-600">2</span>
-                        Add Statement Cards
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-600">2</span>
+                    Enter the Statement
+                </div>
+                <FormField label="Statement" required>
+                    <Textarea
+                        value={value.content}
+                        onChange={(e) => onChange({ ...value, content: e.target.value })}
+                        placeholder="Enter the statement..."
+                        rows={2}
+                    />
+                </FormField>
+            </div>
+
+            {/* Step 3: Correct Answer */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-600">3</span>
+                    Select Correct Answer
+                </div>
+                <div className="space-y-2">
+                    <Label>Correct Answer</Label>
+                    <div className="flex gap-2">
+                        <button
+                            type="button"
+                            onClick={() => onChange({ ...value, correct_swipe: 'left' })}
+                            className={cn(
+                                'flex-1 rounded-lg px-4 py-3 text-sm font-medium transition-all',
+                                value.correct_swipe === 'left'
+                                    ? 'bg-blue-500 text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            )}
+                        >
+                            ← {value.labels.left || 'Left'}
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => onChange({ ...value, correct_swipe: 'right' })}
+                            className={cn(
+                                'flex-1 rounded-lg px-4 py-3 text-sm font-medium transition-all',
+                                value.correct_swipe === 'right'
+                                    ? 'bg-blue-500 text-white shadow-md'
+                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            )}
+                        >
+                            {value.labels.right || 'Right'} →
+                        </button>
                     </div>
-                    <button
-                        type="button"
-                        onClick={addCard}
-                        className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700"
-                    >
-                        <Plus className="h-4 w-4" />
-                        Add Card
-                    </button>
                 </div>
+            </div>
 
-                <div className="space-y-4">
-                    {value.cards.map((card, index) => (
-                        <div key={index} className="rounded-lg border border-gray-200 p-4 space-y-4">
-                            <div className="flex items-center justify-between">
-                                <span className="text-sm font-medium text-gray-500">Card {index + 1}</span>
-                                {value.cards.length > 1 && (
-                                    <button
-                                        type="button"
-                                        onClick={() => removeCard(index)}
-                                        className="text-gray-400 hover:text-red-500"
-                                    >
-                                        <Trash2 className="h-4 w-4" />
-                                    </button>
-                                )}
-                            </div>
-
-                            <FormField label="Statement">
-                                <Textarea
-                                    value={card.content}
-                                    onChange={(e) => updateCard(index, 'content', e.target.value)}
-                                    placeholder="Enter the statement..."
-                                    rows={2}
-                                />
-                            </FormField>
-
-                            <div className="space-y-2">
-                                <Label>Correct Answer</Label>
-                                <div className="flex gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => updateCard(index, 'correct_swipe', 'left')}
-                                        className={cn(
-                                            'flex-1 rounded-lg px-4 py-3 text-sm font-medium transition-all',
-                                            card.correct_swipe === 'left'
-                                                ? 'bg-blue-500 text-white shadow-md'
-                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                        )}
-                                    >
-                                        ← {value.labels.left || 'Left'}
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => updateCard(index, 'correct_swipe', 'right')}
-                                        className={cn(
-                                            'flex-1 rounded-lg px-4 py-3 text-sm font-medium transition-all',
-                                            card.correct_swipe === 'right'
-                                                ? 'bg-blue-500 text-white shadow-md'
-                                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                                        )}
-                                    >
-                                        {value.labels.right || 'Right'} →
-                                    </button>
-                                </div>
-                            </div>
-
-                            <FormField label="Explanation" helper="Why does this belong to this category?">
-                                <Input
-                                    value={card.explanation}
-                                    onChange={(e) => updateCard(index, 'explanation', e.target.value)}
-                                    placeholder="Explain why..."
-                                />
-                            </FormField>
-                        </div>
-                    ))}
+            {/* Step 4: Explanation */}
+            <div className="space-y-4">
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs text-blue-600">4</span>
+                    Explain the Answer
                 </div>
+                <FormField label="Explanation" helper="Why does this belong to this category?">
+                    <Textarea
+                        value={value.explanation}
+                        onChange={(e) => onChange({ ...value, explanation: e.target.value })}
+                        placeholder="Explain why..."
+                        rows={2}
+                    />
+                </FormField>
             </div>
         </div>
     );
@@ -1276,7 +1241,9 @@ export const getDefaultContent = (type: QuestionType): AnyContent => {
             };
         case 'swipe_decision':
             return {
-                cards: [{ content: '', correct_swipe: 'left', explanation: '' }],
+                content: '',
+                correct_swipe: 'left',
+                explanation: '',
                 labels: { left: 'Fact', right: 'Opinion' },
             };
         case 'fill_gap':
